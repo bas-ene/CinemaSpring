@@ -14,6 +14,7 @@ public class Film {
 	public String genere;
 	public Date uscita;
 	public Time durata;
+	public String imgPath;
 
 	public Film(int id, String title, Time duration) {
 		this.id = id;
@@ -22,13 +23,14 @@ public class Film {
 
 	}
 
-	public Film(int id, String title, String director, String genre, Date release, Time duration) {
+	public Film(int id, String title, String director, String genre, Date release, Time duration, String imgPath) {
 		this.id = id;
 		this.nome = title;
 		this.regista = director;
 		this.genere = genre;
 		this.uscita = release;
 		this.durata = duration;
+		this.imgPath = "images/" + imgPath;
 	}
 
 }

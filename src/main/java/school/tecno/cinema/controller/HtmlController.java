@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpSession;
 import school.tecno.cinema.Film;
+import school.tecno.cinema.User;
 import school.tecno.cinema.services.CinemaService;
 
 /**
@@ -18,26 +19,24 @@ import school.tecno.cinema.services.CinemaService;
 public class HtmlController {
 
 	@GetMapping("/")
-	public String index(HttpSession session, Model model) {
-		if (session.getAttribute("id") != null) {
-			return films(session, model, null);
-		} else {
-			return "index";
-		}
+	public String index() {
+		return "index";
 	}
 
 	@GetMapping("/login")
 	public String loginHTML(HttpSession session, Model model) {
-		if (session.getAttribute("id") != null) {
-			return films(session, model, null);
+		if (session.getAttribute("user") != null) {
+			model.addAttribute("genres", CinemaService.getGenres());
+			return "home";
 		}
 		return "login";
 	}
 
 	@GetMapping("/register")
 	public String registerHTML(HttpSession session, Model model) {
-		if (session.getAttribute("id") != null) {
-			return films(session, model, null);
+		if (session.getAttribute("user") != null) {
+			model.addAttribute("genres", CinemaService.getGenres());
+			return "home";
 		}
 		return "register";
 	}
@@ -45,16 +44,16 @@ public class HtmlController {
 	@GetMapping("/films")
 	public String films(HttpSession session, Model model,
 			@RequestParam(name = "genreSelector", required = false) String genre) {
-		List<String> genres = CinemaService.getGenres();
 		List<Film> films;
-		if (genre != null) {
+		if (genre != null && !genre.isEmpty()) {
 			films = CinemaService.getFilmsByGenre(genre);
 		} else {
 			films = CinemaService.getFilms(20);
 		}
+		User user = (User) session.getAttribute("user");
 		model.addAttribute("films", films);
-		model.addAttribute("genres", genres);
-		return "home";
+		model.addAttribute("isAdmin", user.isAdmin);
+		return "films";
 	}
 
 	@GetMapping("/film")

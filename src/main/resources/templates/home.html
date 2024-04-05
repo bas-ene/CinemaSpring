@@ -1,25 +1,7 @@
-<select id="genreSelector" name="genreSelector" class="block w-fit h-fit mt-1" hx-get="/films" hx-target="#container"
-	hx-swap="innerHTML" hx-params="*">
-	<option disabled selected>Please select...</option>
+<select id="genreSelector" name="genreSelector" class="block w-fit h-fit mt-1" hx-get="/films"
+	hx-target="#tableContainer" hx-swap="innerHTML" hx-params="*">
+	<option value="">Tutti i generi</option>
 	<option th:each="genre: ${genres}" th:value="${genre}" th:text="${genre}"></option>
 </select>
-<table class="table-auto">
-	<thead>
-		<tr>
-			<th>Nome</th>
-			<th>Genere</th>
-			<th>Regista</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr th:each="film: ${films}">
-			<td>
-				<a th:href="@{/film(id=${film.id})}">
-					<span th:text="${film.nome}"></span>
-				</a>
-			</td>
-			<td th:text="${film.genere}"></td>
-			<td th:text="${film.regista}"></td>
-		</tr>
-	</tbody>
-</table>
+<div id="tableContainer" hx-get="/films" hx-target="#tableContainer" hx-swap="innerHTML" hx-trigger="load consume">
+</div>

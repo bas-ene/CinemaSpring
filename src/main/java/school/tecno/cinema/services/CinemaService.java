@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import school.tecno.cinema.Film;
 import school.tecno.cinema.Secrets;
+import school.tecno.cinema.User;
 import school.tecno.cinema.Utils;
 import school.tecno.cinema.database.DatabaseConn;
 
@@ -71,10 +72,27 @@ public class CinemaService {
 		return db.userExists(email, Utils.HashString(password));
 	}
 
-	public static boolean registerUser(String email, String password) {
+	public static User getUser(Integer id) {
 		CinemaService.init();
 
-		return db.registerUser(email, Utils.HashString(password));
+		return db.getUser(id);
+	}
+
+	public static User loginUser(String email, String password) {
+		CinemaService.init();
+
+		Integer id = db.userExists(email, Utils.HashString(password));
+		if (id != null) {
+			return db.getUser(id);
+		}
+		return null;
+	}
+
+	public static User registerUser(String email, String password) {
+		CinemaService.init();
+
+		Integer id = db.registerUser(email, Utils.HashString(password));
+		return db.getUser(id);
 	}
 
 	public static boolean userIsAdmin(Integer id) {
@@ -82,4 +100,11 @@ public class CinemaService {
 
 		return db.userIsAdmin(id);
 	}
+
+	public static void deleteFilm(Integer id) {
+		CinemaService.init();
+
+		db.deleteFilm(id);
+	}
+
 }

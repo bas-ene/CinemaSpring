@@ -1,0 +1,38 @@
+<head>
+	<script>
+		document.addEventListener("htmx:confirm", function (e) {
+			e.preventDefault()
+			Swal.fire({
+				title: "Eliminazione film",
+				text: `${e.detail.question}`
+			}).then(function (result) {
+				if (result.isConfirmed) e.detail.issueRequest(true) // use true to skip window.confirm
+			})
+		})
+	</script>
+</head>
+
+<table class="table-auto">
+	<thead>
+		<tr>
+			<th>Nome</th>
+			<th>Genere</th>
+			<th>Regista</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr th:each="film: ${films}">
+			<td>
+				<a th:href="@{/film(id=${film.id})}">
+					<span th:text="${film.nome}"></span>
+				</a>
+			</td>
+			<td th:text="${film.genere}"></td>
+			<td th:text="${film.regista}"></td>
+			<td th:if="${isAdmin}">
+				<button hx-delete="/film" name="id" th:value="${film.id}" hx-swap="innerHTML" hx-target="#container"
+					hx-confirm="Sicuro di voler emilinare il film?">Delete</button>
+			</td>
+		</tr>
+	</tbody>
+</table>
