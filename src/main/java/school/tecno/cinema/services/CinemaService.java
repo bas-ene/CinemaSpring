@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import school.tecno.cinema.Film;
@@ -18,9 +19,10 @@ import school.tecno.cinema.database.DatabaseConn;
 @Service
 public class CinemaService {
 
-	private static DatabaseConn db = null;
+	private DatabaseConn db = null;
 
-	private static void init() {
+	@Autowired
+	private void init() {
 		if (db == null) {
 			try {
 				db = new DatabaseConn(Secrets.DB_NAME, Secrets.DB_USER, Secrets.DB_PASS);
@@ -31,8 +33,7 @@ public class CinemaService {
 		}
 	}
 
-	public static List<Film> getFilms(int limit) {
-		CinemaService.init();
+	public List<Film> getFilms(int limit) {
 		List<Film> films = db.getFilms(limit);
 		if (films == null) {
 			films = new ArrayList<>();
@@ -40,15 +41,11 @@ public class CinemaService {
 		return films;
 	}
 
-	public static Film getFilm(Integer id) {
-		CinemaService.init();
-
+	public Film getFilm(Integer id) {
 		return db.getFilm(id);
 	}
 
-	public static List<Film> getFilmsByGenre(String genre) {
-		CinemaService.init();
-
+	public List<Film> getFilmsByGenre(String genre) {
 		List<Film> films = db.getFilmsByGenre(genre);
 		if (films == null) {
 			films = new ArrayList<>();
@@ -56,8 +53,7 @@ public class CinemaService {
 		return films;
 	}
 
-	public static List<String> getGenres() {
-		CinemaService.init();
+	public List<String> getGenres() {
 
 		List<String> genres = db.getGenres();
 		if (genres == null) {
@@ -66,21 +62,15 @@ public class CinemaService {
 		return genres;
 	}
 
-	public static Integer userExists(String email, String password) {
-		CinemaService.init();
-
+	public Integer userExists(String email, String password) {
 		return db.userExists(email, Utils.HashString(password));
 	}
 
-	public static User getUser(Integer id) {
-		CinemaService.init();
-
+	public User getUser(Integer id) {
 		return db.getUser(id);
 	}
 
-	public static User loginUser(String email, String password) {
-		CinemaService.init();
-
+	public User loginUser(String email, String password) {
 		Integer id = db.userExists(email, Utils.HashString(password));
 		if (id != null) {
 			return db.getUser(id);
@@ -88,23 +78,16 @@ public class CinemaService {
 		return null;
 	}
 
-	public static User registerUser(String email, String password) {
-		CinemaService.init();
-
+	public User registerUser(String email, String password) {
 		Integer id = db.registerUser(email, Utils.HashString(password));
 		return db.getUser(id);
 	}
 
-	public static boolean userIsAdmin(Integer id) {
-		CinemaService.init();
-
+	public boolean userIsAdmin(Integer id) {
 		return db.userIsAdmin(id);
 	}
 
-	public static void deleteFilm(Integer id) {
-		CinemaService.init();
-
+	public void deleteFilm(Integer id) {
 		db.deleteFilm(id);
 	}
-
 }

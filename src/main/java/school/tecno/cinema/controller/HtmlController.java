@@ -2,6 +2,7 @@ package school.tecno.cinema.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,9 @@ import school.tecno.cinema.services.CinemaService;
 @Controller
 public class HtmlController {
 
+	@Autowired
+	private CinemaService cinemaServ;
+
 	@GetMapping("/")
 	public String index() {
 		return "index";
@@ -26,7 +30,7 @@ public class HtmlController {
 	@GetMapping("/login")
 	public String loginHTML(HttpSession session, Model model) {
 		if (session.getAttribute("user") != null) {
-			model.addAttribute("genres", CinemaService.getGenres());
+			model.addAttribute("genres", cinemaServ.getGenres());
 			return "home";
 		}
 		return "login";
@@ -35,7 +39,7 @@ public class HtmlController {
 	@GetMapping("/register")
 	public String registerHTML(HttpSession session, Model model) {
 		if (session.getAttribute("user") != null) {
-			model.addAttribute("genres", CinemaService.getGenres());
+			model.addAttribute("genres", cinemaServ.getGenres());
 			return "home";
 		}
 		return "register";
@@ -46,9 +50,9 @@ public class HtmlController {
 			@RequestParam(name = "genreSelector", required = false) String genre) {
 		List<Film> films;
 		if (genre != null && !genre.isEmpty()) {
-			films = CinemaService.getFilmsByGenre(genre);
+			films = cinemaServ.getFilmsByGenre(genre);
 		} else {
-			films = CinemaService.getFilms(20);
+			films = cinemaServ.getFilms(20);
 		}
 		User user = (User) session.getAttribute("user");
 		model.addAttribute("films", films);
@@ -58,7 +62,7 @@ public class HtmlController {
 
 	@GetMapping("/film")
 	public String film(HttpSession session, Model model, @RequestParam(name = "id") Integer id) {
-		Film film = CinemaService.getFilm(id);
+		Film film = cinemaServ.getFilm(id);
 		if (film == null) {
 			return "index";
 		}

@@ -183,7 +183,7 @@ public class DatabaseConn {
 	}
 
 	public void deleteFilm(Integer id) {
-		String query = "DELETE FROM film WHERE flm_id = ?";
+		String query = "DELETE FROM films WHERE flm_id = ?";
 		try (PreparedStatement stmt = conn.prepareStatement(query)) {
 			stmt.setInt(1, id);
 			stmt.execute();
