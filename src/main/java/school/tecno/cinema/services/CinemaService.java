@@ -1,10 +1,9 @@
 package school.tecno.cinema.services;
 
-import java.sql.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import school.tecno.cinema.Film;
@@ -19,17 +18,14 @@ import school.tecno.cinema.database.DatabaseConn;
 @Service
 public class CinemaService {
 
-	private DatabaseConn db = null;
+	private DatabaseConn db;
 
-	@Autowired
-	private void init() {
-		if (db == null) {
-			try {
-				db = new DatabaseConn(Secrets.DB_NAME, Secrets.DB_USER, Secrets.DB_PASS);
-			} catch (SQLException e) {
-				System.out.println(e.getMessage());
-				e.printStackTrace();
-			}
+	private CinemaService() {
+		try {
+			db = new DatabaseConn(Secrets.DB_NAME, Secrets.DB_USER, Secrets.DB_PASS);
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
