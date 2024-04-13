@@ -24,6 +24,8 @@ public class SiteController {
 	@Autowired
 	private SessionManager sessionManager;
 
+	private static final String USER_ATTR = "user";
+
 	@PostMapping("/login")
 	public String login(Model model, @RequestParam(name = "email") String email,
 			@RequestParam(name = "password") String password, HttpServletResponse response) {
@@ -31,7 +33,7 @@ public class SiteController {
 		User user = cinemaServ.loginUser(email, password);
 		if (user != null) {
 			try {
-				sessionManager.createNewSession(user);
+				sessionManager.sessionStart().setAttribute(USER_ATTR, user);
 			} catch (Exception e) {
 				e.printStackTrace();
 				try {
@@ -54,7 +56,7 @@ public class SiteController {
 		User registeredUser = cinemaServ.registerUser(email, password);
 		if (registeredUser != null) {
 			try {
-				sessionManager.createNewSession(registeredUser);
+				sessionManager.sessionStart().setAttribute(USER_ATTR, registeredUser);
 			} catch (Exception e) {
 				e.printStackTrace();
 				try {
@@ -72,7 +74,7 @@ public class SiteController {
 
 	@DeleteMapping("/film")
 	public String deleteFilm(Model model, @RequestParam(name = "id") Integer id, HttpServletRequest request) {
-		User user = sessionManager.getUserFromSession();
+		User user = (User) sessionManager.sessionStart().getAttribute(USER_ATTR);
 		if (user != null && user.isAdmin) {
 			cinemaServ.deleteFilm(id);
 		}

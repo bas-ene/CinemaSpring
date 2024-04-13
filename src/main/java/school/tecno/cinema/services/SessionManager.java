@@ -1,6 +1,9 @@
 
 package school.tecno.cinema.services;
 
+import school.tecno.cinema.Session;
+
+import java.util.HashMap;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +23,7 @@ import school.tecno.cinema.database.DatabaseConn;
 @Service
 public class SessionManager {
 
-	@Autowired
-	private DatabaseConn db;
-
+	private HashMap<UUID, Session> sessions = new HashMap<UUID, Session>();
 	private static final String SESSION_COOKIE_NAME = "session";
 
 	private HttpServletRequest getRequest() {
@@ -60,23 +61,37 @@ public class SessionManager {
 		r.addCookie(c);
 	}
 
-	public void createNewSession(User user) throws Exception {
-		UUID sessionUUID = db.createNewSession(user.id);
-		if (sessionUUID == null) {
-			throw new Exception("Could not create session");
-		}
-		this.setCookie(SESSION_COOKIE_NAME, sessionUUID.toString());
+	private Session buildNewSession() {
+		UUID sessionUUID = UUID.randomUUID();
+		Session s = new Session(sessionUUID);
+		return s;
 	}
 
-	public User getUserFromSession() {
+	public Session sessionStart() {
 		Cookie sessionCookie = this.getCookie(SESSION_COOKIE_NAME);
 		if (sessionCookie == null) {
-			return null;
+			Session s = this.buildNewSession();
+			sessions.put(s.getSessionUUID(), s);
+			this.setCookie(SESSION_COOKIE_NAME, s.getSessionUUID().toString());
+			return s;
+		} else {
+			UUID sessionUUID = UUID.fromString(sessionCookie.getValue());
+			Session s = this.sessions.get(sessionUUID);
+			if (s == null) {
+				s = this.buildNewSession();
+				sessions.put(s.getSessionUUID(), s);
+				this.setCookie(SESSION_COOKIE_NAME, s.getSessionUUID().toString());
+			}
+			return s;
 		}
+	}
 
-		String sessionUUID = sessionCookie.getValue();
-
-		User user = this.db.getUserFromSession(sessionUUID);
-		return user;
+	public void sessionDestroy() {
+		Cookie sessionCookie = this.getCookie(SESSION_COOKIE_NAME);
+		if (sessionCookie != null) {
+			UUID sessionUUID = UUID.fromString(sessionCookie.getValue());
+			this.sessions.remove(sessionUUID);
+			this.deleteCookie(SESSION_COOKIE_NAME);
+		}
 	}
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpServletRequest;
 import school.tecno.cinema.Film;
+import school.tecno.cinema.Session;
 import school.tecno.cinema.User;
 import school.tecno.cinema.services.CinemaService;
 import school.tecno.cinema.services.SessionManager;
@@ -25,6 +26,8 @@ public class HtmlController {
 	@Autowired
 	private SessionManager sessionManager;
 
+	private static final String USER_ATTR = "user";
+
 	@GetMapping("/")
 	public String index() {
 		return "index";
@@ -32,7 +35,7 @@ public class HtmlController {
 
 	@GetMapping("/login")
 	public String loginHTML(Model model, HttpServletRequest r) {
-		if (sessionManager.getUserFromSession() != null) {
+		if (sessionManager.sessionStart().getAttribute(USER_ATTR) != null) {
 			model.addAttribute("genres", cinemaServ.getGenres());
 			return "home";
 		}
@@ -41,7 +44,7 @@ public class HtmlController {
 
 	@GetMapping("/register")
 	public String registerHTML(Model model, HttpServletRequest r) {
-		if (sessionManager.getUserFromSession() != null) {
+		if (sessionManager.sessionStart().getAttribute(USER_ATTR) != null) {
 			model.addAttribute("genres", cinemaServ.getGenres());
 			return "home";
 		}
@@ -53,7 +56,8 @@ public class HtmlController {
 			@RequestParam(name = "genreSelector", required = false) String genre, HttpServletRequest r) {
 		List<Film> films;
 
-		User user = sessionManager.getUserFromSession();
+		Session session = sessionManager.sessionStart();
+		User user = (User) session.getAttribute(USER_ATTR);
 
 		// send user to login page if not logged in
 		if (user == null) {
